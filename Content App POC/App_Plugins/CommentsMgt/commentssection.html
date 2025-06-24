@@ -1,0 +1,228 @@
+﻿<div ng-controller="My.CommentsSectionApp as vm">
+    <style>
+        .comments-section-card {
+            margin-bottom: 1.2rem;
+            border-radius: 1.2em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            border: none;
+            transition: box-shadow 0.2s;
+        }
+        .comments-section-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        }
+        .comment-author {
+            font-weight: 600;
+            color: #1877f2;
+        }
+        .comment-date {
+            font-size: 0.9em;
+            color: #888;
+        }
+        .comment-text {
+            margin: 0.5em 0 0.5em 0;
+            font-size: 1.08em;
+            line-height: 1.5;
+        }
+        .comment-actions button {
+            margin-right: 0.5em;
+            font-size: 0.95em;
+        }
+        .add-comment-form textarea {
+            resize: vertical;
+            border-radius: 1.2em;
+            padding: 0.7em 1em;
+            border: 1px solid #e4e6eb;
+            background: #f0f2f5;
+        }
+        .add-comment-form {
+            background: #fff;
+            border-radius: 1.2em;
+            padding: 1em 1.5em 1em 1.5em;
+            margin-bottom: 1.5em;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: flex-start;
+        }
+        .add-comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e4e6eb;
+            color: #1877f2;
+            font-weight: bold;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1em;
+            flex-shrink: 0;
+        }
+        .add-comment-input {
+            flex: 1;
+        }
+        .comment-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e4e6eb;
+            color: #1877f2;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.9em;
+            flex-shrink: 0;
+        }
+        .comment-header {
+            display: flex;
+            align-items: center;
+        }
+        .comment-body {
+            margin-left: 3.2em;
+        }
+        .comment-divider {
+            border-top: 1px solid #f0f2f5;
+            margin: 0.7em 0 0.2em 0;
+        }
+        .comment-actions {
+            margin-left: 3.2em;
+        }
+        .comment-reply {
+            margin-left: 3.5em;
+            background: #f7fafd;
+        }
+    </style>
+    <umb-box>
+        <umb-box-header title="Current Node and User Info"></umb-box-header>
+        <umb-box-content>
+            <!--<div ng-repeat="(key, value) in vm.propertyWordCount">
+                <p>Property: <span style="font-style:italic">{{key}}</span>, amount of words: <span style="font-style:italic">{{value}}</span> </p>
+            </div>
+            <hr />-->
+
+            <ul class="list-unstyled mb-4">
+                <li>Current node id: <b>{{vm.CurrentNodeId}}</b></li>
+                <li>Current node alias: <b>{{vm.CurrentNodeAlias}}</b></li>
+                <li>Current user: <b>{{vm.UserName}}</b></li>
+                <li>Current user groups: <b>{{vm.UserGroups}}</b></li>
+            </ul>
+        </umb-box-content>
+        <umb-box-content>
+            <h4 class="mb-3">Comments</h4>
+            <div ng-if="vm.CanEditComments" class="add-comment-form mb-4">
+                <div class="add-comment-avatar">
+                    {{vm.getInitials(vm.UserName)}}
+                </div>
+                <form ng-submit="vm.addComment()" class="add-comment-input">
+                    <div class="mb-2">
+                        <textarea ng-model="vm.newCommentText" placeholder="Write a comment..." rows="2" class="form-control"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+                </form>
+            </div>
+            <!-- Add Comment Button (admin only) -->
+            <div class="mb-3" ng-if="vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
+                <button class="btn btn-success btn-sm" ng-click="vm.openAddModal()">
+                    <i class="fa fa-plus"></i> Add Comment
+                </button>
+            </div>
+            <!-- Add Modal -->
+            <div class="modal fade" tabindex="-1" ng-show="vm.showAddModal" style="display:block; background:rgba(0,0,0,0.3);">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Comment</h5>
+                            <button type="button" class="btn-close" ng-click="vm.closeAddModal()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea ng-model="vm.newCommentText" class="form-control" rows="3" placeholder="Write your comment..."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" ng-click="vm.closeAddModal()">Cancel</button>
+                            <button class="btn btn-primary" ng-click="vm.addComment()">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="comments-list">
+                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3">
+                    <div class="comment-header">
+                        <div class="comment-avatar">
+                            {{vm.getInitials(comment.createdBy)}}
+                        </div>
+                        <div>
+                            <span class="comment-author">{{comment.createdBy}}</span><br/>
+                            <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
+                        </div>
+                    </div>
+                    <div class="comment-body d-flex flex-row align-items-start">
+                        <div class="comment-text">{{comment.commentText}}</div>
+                        <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
+                            <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                    <!-- Replies -->
+                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" class="card comments-section-card comment-reply p-3">
+                        <div class="comment-header">
+                            <div class="comment-avatar">
+                                {{vm.getInitials(reply.createdBy)}}
+                            </div>
+                            <div>
+                                <span class="comment-author">{{reply.createdBy}}</span><br/>
+                                <span class="comment-date">{{reply.createdOn | date:'short'}}</span>
+                            </div>
+                        </div>
+                        <div class="comment-body d-flex flex-row align-items-start">
+                            <div class="comment-text">{{reply.commentText}}</div>
+                            <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
+                                <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)"><i class="fa fa-edit"></i> Edit</button>
+                                <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(reply)"><i class="fa fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-divider" ng-if="!$last"></div>
+                </div>
+                <div ng-if="!vm.Comments.length" class="alert alert-info mt-3">No comments yet. Be the first to comment!</div>
+            </div>
+            <!-- Edit Modal -->
+            <div class="modal fade" tabindex="-1" ng-show="vm.showEditModal" style="display:block; background:rgba(0,0,0,0.3);">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Comment</h5>
+                            <button type="button" class="btn-close" ng-click="vm.closeEditModal()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea ng-model="vm.editingCommentText" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" ng-click="vm.closeEditModal()">Cancel</button>
+                            <button class="btn btn-primary" ng-click="vm.saveEdit()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Delete Modal -->
+            <div class="modal fade" tabindex="-1" ng-show="vm.showDeleteModal" style="display:block; background:rgba(0,0,0,0.3);">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Comment</h5>
+                            <button type="button" class="btn-close" ng-click="vm.closeDeleteModal()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this comment?</p>
+                            <div class="border p-2 bg-light">{{vm.modalComment && vm.modalComment.commentText}}</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" ng-click="vm.closeDeleteModal()">Cancel</button>
+                            <button class="btn btn-danger" ng-click="vm.confirmDelete()">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </umb-box-content>
+    </umb-box>
+</div>
