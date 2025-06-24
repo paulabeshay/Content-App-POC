@@ -44,15 +44,13 @@ angular.module("umbraco")
 
         // Modal open/close helpers
         vm.openAddModal = function () {
-            console.log("Add Modal Function called, ShowAddModal = " + vm.showAddModal);
             vm.newCommentText = '';
             vm.showAddModal = true;
-            console.log("Add Modal Function called, ShowAddModal = " + vm.showAddModal);
         };
         vm.closeAddModal = function() {
             vm.showAddModal = false;
         };
-        vm.openEditModal = function(comment) {
+        vm.openEditModal = function (comment) {
             vm.modalComment = angular.copy(comment);
             vm.editingCommentText = comment.commentText;
             vm.showEditModal = true;
@@ -61,7 +59,7 @@ angular.module("umbraco")
             vm.showEditModal = false;
             vm.modalComment = null;
         };
-        vm.openDeleteModal = function(comment) {
+        vm.openDeleteModal = function (comment) {
             vm.modalComment = comment;
             vm.showDeleteModal = true;
         };
@@ -133,6 +131,16 @@ angular.module("umbraco")
                 vm.closeReplyModal();
                 vm.loadComments();
             });
+        };
+
+        // Get user initials for avatar
+        vm.getInitials = function(name) {
+            if (!name) return '';
+            var names = name.split(' ');
+            if (names.length >= 2) {
+                return (names[0].charAt(0) + names[1].charAt(0)).toUpperCase();
+            }
+            return name.charAt(0).toUpperCase();
         };
 
         // Initial user check
