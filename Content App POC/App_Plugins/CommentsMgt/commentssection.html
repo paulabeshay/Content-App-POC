@@ -146,7 +146,7 @@
                 </div>
             </div>
             <div class="comments-list">
-                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3">
+                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3" style="padding:15px;">
                     <div class="comment-header">
                         <div class="comment-avatar">
                             {{vm.getInitials(comment.createdBy)}}
@@ -156,15 +156,15 @@
                             <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
                         </div>
                     </div>
-                    <div class="comment-body d-flex flex-row align-items-start">
-                        <div class="comment-text">{{comment.commentText}}</div>
+                    <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
+                        <div class="comment-text" style="width: 70%;">{{comment.commentText}}</div>
                         <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
                         </div>
                     </div>
                     <!-- Replies -->
-                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" class="card comments-section-card comment-reply p-3">
+                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3">
                         <div class="comment-header">
                             <div class="comment-avatar">
                                 {{vm.getInitials(reply.createdBy)}}
@@ -174,8 +174,8 @@
                                 <span class="comment-date">{{reply.createdOn | date:'short'}}</span>
                             </div>
                         </div>
-                        <div class="comment-body d-flex flex-row align-items-start">
-                            <div class="comment-text">{{reply.commentText}}</div>
+                        <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
+                            <div class="comment-text" style="width: 65%;">{{reply.commentText}}</div>
                             <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)"><i class="fa fa-edit"></i> Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(reply)"><i class="fa fa-trash"></i> Delete</button>
