@@ -1,0 +1,26 @@
+{
+    // define the content apps you want to create
+    //"contentApps": [
+    //  {
+    //    "name": "Comments Section", // required - the name that appears under the icon
+    //    "alias": "commentsSection", // required - unique alias for your app
+    //    "weight": 0, // optional, default is 0, use values between -99 and +99 to appear between the existing Content (-100) and Info (100) apps
+    //    "icon": "icon-calculator", // required - the icon to use
+    //    "view": "~/App_Plugins/CommentsMgt/commentssection.html", // required - the location of the view file
+    //    "show": [
+    //      //"-content/Home", // hide for content using the 'homePage' Document Type (Content section)
+    //      "+content/*", // show for content using any other Document Type (Content section)
+    //      //"+media/*", // show for all Media Types
+    //      //"-member/premiumMembers", // hide for Member Type 'premiumMembers'
+    //      //"+member/*", // show for all other Member Types
+    //      //"-contentType/article", // hide on the Document Type with alias 'textPage' (Settings section)
+    //      //"+contentType/*" // show on all other Document Types (Settings section)
+    //      //"+role/editor" // show for 'admin' user group
+    //    ]
+    //  }
+    //],
+    // array of files we want to inject into the application on app_start
+    "javascript": [
+        "~/App_Plugins/CommentsMgt/commentssection.controller.js"
+    ]
+}

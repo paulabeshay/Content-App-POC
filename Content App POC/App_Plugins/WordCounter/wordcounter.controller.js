@@ -36,5 +36,7 @@ angular.module("umbraco")
 
         var user = userService.getCurrentUser().then(function (user) {
             vm.UserName = user.name;
+            vm.UserGroup = user.groups[0].name; // Assuming the user has at least one group
+            //vm.UserGroup = user.groups.select(g => g.name);
         });
     });
