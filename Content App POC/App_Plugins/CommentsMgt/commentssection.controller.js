@@ -13,9 +13,12 @@ angular.module("umbraco")
         vm.showAddModal = false;
         vm.showEditModal = false;
         vm.showDeleteModal = false;
+        vm.showReplyModal = false;
         vm.modalComment = null;
+        vm.replyToComment = null;
         vm.newCommentText = '';
         vm.editingCommentText = '';
+        vm.replyText = '';
 
         // Fetch comments for the current content id
         vm.loadComments = function() {
@@ -41,9 +44,10 @@ angular.module("umbraco")
 
         // Modal open/close helpers
         vm.openAddModal = function () {
-            console.log("Add Modal Function called");
+            console.log("Add Modal Function called, ShowAddModal = " + vm.showAddModal);
             vm.newCommentText = '';
             vm.showAddModal = true;
+            console.log("Add Modal Function called, ShowAddModal = " + vm.showAddModal);
         };
         vm.closeAddModal = function() {
             vm.showAddModal = false;
@@ -64,6 +68,18 @@ angular.module("umbraco")
         vm.closeDeleteModal = function() {
             vm.showDeleteModal = false;
             vm.modalComment = null;
+        };
+
+        // Reply modal functions
+        vm.openReplyModal = function(comment) {
+            vm.replyToComment = comment;
+            vm.replyText = '';
+            vm.showReplyModal = true;
+        };
+        vm.closeReplyModal = function() {
+            vm.showReplyModal = false;
+            vm.replyToComment = null;
+            vm.replyText = '';
         };
 
         // Add comment (modal)
@@ -99,6 +115,22 @@ angular.module("umbraco")
             if (!vm.modalComment) return;
             $http.delete('/api/comments/' + vm.modalComment.id).then(function() {
                 vm.closeDeleteModal();
+                vm.loadComments();
+            });
+        };
+
+        // Submit reply
+        vm.submitReply = function() {
+            if (!vm.replyText || !vm.replyToComment) return;
+            var reply = {
+                contentId: vm.CurrentNodeId,
+                commentText: vm.replyText,
+                parentCommentId: vm.replyToComment.id,
+                createdBy: vm.UserName,
+                modifiedBy: vm.UserName
+            };
+            $http.post('/api/comments', reply).then(function() {
+                vm.closeReplyModal();
                 vm.loadComments();
             });
         };
