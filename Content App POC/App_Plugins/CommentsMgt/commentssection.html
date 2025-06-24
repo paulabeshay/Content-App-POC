@@ -92,6 +92,34 @@
             margin-left: 3.5em;
             background: #f7fafd;
         }
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-modal-dialog {
+            background: #fff;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+        }
+        .reply-button {
+            margin-left: 0.5em;
+            font-size: 0.9em;
+            color: #1877f2;
+            background: none;
+            border: none;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .reply-button:hover {
+            color: #0d5aa7;
+        }
     </style>
     <umb-box>
         <umb-box-header title="Current Node and User Info"></umb-box-header>
@@ -128,9 +156,9 @@
                 </button>
             </div>
             <!-- Add Modal -->
-            <div class="modal fade" tabindex="-1" ng-show="vm.showAddModal" style="display:block; background:rgba(0,0,0,0.3);">
-                <div class="modal-dialog">
-                    <div class="modal-content">
+            <div ng-show="vm.showAddModal" class="custom-modal-overlay">
+                <div class="custom-modal-dialog">
+                    <div class="custom-modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Add Comment</h5>
                             <button type="button" class="btn-close" ng-click="vm.closeAddModal()"></button>
@@ -157,10 +185,14 @@
                         </div>
                     </div>
                     <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
-                        <div class="comment-text" style="width: 70%;">{{comment.commentText}}</div>
+                        <div class="comment-text" style="width: 58%;">{{comment.commentText}}</div>
                         <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
+                            <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
+                        </div>
+                        <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                            <button class="reply-button" ng-click="vm.openReplyModal(comment)">Reply</button>
                         </div>
                     </div>
                     <!-- Replies -->
@@ -219,6 +251,28 @@
                         <div class="modal-footer">
                             <button class="btn btn-secondary" ng-click="vm.closeDeleteModal()">Cancel</button>
                             <button class="btn btn-danger" ng-click="vm.confirmDelete()">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Reply Modal -->
+            <div ng-show="vm.showReplyModal" class="custom-modal-overlay">
+                <div class="custom-modal-dialog">
+                    <div class="custom-modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reply to Comment</h5>
+                            <button type="button" class="btn-close" ng-click="vm.closeReplyModal()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <strong>Replying to:</strong>
+                                <div class="border p-2 bg-light mt-1">{{vm.replyToComment && vm.replyToComment.commentText}}</div>
+                            </div>
+                            <textarea ng-model="vm.replyText" class="form-control" rows="3" placeholder="Write your reply..."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" ng-click="vm.closeReplyModal()">Cancel</button>
+                            <button class="btn btn-primary" ng-click="vm.submitReply()">Reply</button>
                         </div>
                     </div>
                 </div>
