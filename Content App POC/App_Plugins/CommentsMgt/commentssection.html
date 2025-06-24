@@ -107,6 +107,19 @@
             max-width: 500px;
             width: 100%;
             box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+            outline: none;
+        }
+        .custom-modal-content {
+            outline: none;
+        }
+        .modal-header {
+            outline: none;
+        }
+        .modal-body {
+            outline: none;
+        }
+        .modal-footer {
+            outline: none;
         }
         .reply-button {
             margin-left: 0.5em;
@@ -156,7 +169,7 @@
                 </button>
             </div>
             <!-- Add Modal -->
-            <div ng-show="vm.showAddModal" class="custom-modal-overlay">
+            <div ng-if="vm.showAddModal" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">
@@ -225,7 +238,7 @@
                 <div ng-if="!vm.Comments.length" class="alert alert-info mt-3">No comments yet. Be the first to comment!</div>
             </div>
             <!-- Edit Modal -->
-            <div ng-show="vm.showEditModal" class="custom-modal-overlay">
+            <div ng-if="vm.showEditModal" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">
@@ -243,7 +256,7 @@
                 </div>
             </div>
             <!-- Delete Modal -->
-            <div ng-show="vm.showDeleteModal" class="custom-modal-overlay">
+            <div ng-if="vm.showDeleteModal" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">
@@ -262,7 +275,7 @@
                 </div>
             </div>
             <!-- Reply Modal -->
-            <div ng-show="vm.showReplyModal" class="custom-modal-overlay">
+            <div ng-if="vm.showReplyModal" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">

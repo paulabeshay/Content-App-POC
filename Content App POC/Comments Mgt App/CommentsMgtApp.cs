@@ -40,7 +40,7 @@ namespace Content_App_POC.Comments_Mgt
             {
                 Alias = "commentsSection",
                 Name = "Comments Section",
-                Icon = "icon-calculator",
+                Icon = "icon-reply-arrow",
                 View = "/App_Plugins/CommentsMgt/commentssection.html",
                 Weight = 0
             };
