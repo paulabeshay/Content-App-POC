@@ -46,6 +46,11 @@ angular.module("umbraco")
         vm.openAddModal = function () {
             vm.newCommentText = '';
             vm.showAddModal = true;
+            // Focus management will be handled by $timeout after DOM update
+            $scope.$evalAsync(function() {
+                var textarea = document.querySelector('.custom-modal-overlay textarea');
+                if (textarea) textarea.focus();
+            });
         };
         vm.closeAddModal = function() {
             vm.showAddModal = false;
@@ -54,6 +59,11 @@ angular.module("umbraco")
             vm.modalComment = angular.copy(comment);
             vm.editingCommentText = comment.commentText;
             vm.showEditModal = true;
+            // Focus management will be handled by $timeout after DOM update
+            $scope.$evalAsync(function() {
+                var textarea = document.querySelector('.custom-modal-overlay textarea');
+                if (textarea) textarea.focus();
+            });
         };
         vm.closeEditModal = function() {
             vm.showEditModal = false;
@@ -73,6 +83,11 @@ angular.module("umbraco")
             vm.replyToComment = comment;
             vm.replyText = '';
             vm.showReplyModal = true;
+            // Focus management will be handled by $timeout after DOM update
+            $scope.$evalAsync(function() {
+                var textarea = document.querySelector('.custom-modal-overlay textarea');
+                if (textarea) textarea.focus();
+            });
         };
         vm.closeReplyModal = function() {
             vm.showReplyModal = false;

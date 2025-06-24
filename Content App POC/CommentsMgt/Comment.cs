@@ -17,12 +17,12 @@ namespace Content_App_POC.CommentsMgt
         public int? ParentCommentId { get; set; }
         [Required]
         [MaxLength(50)]
-        public string CreatedBy { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = "Anonymous";
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         [Required]
         [MaxLength(50)]
-        public string ModifiedBy { get; set; } = string.Empty;
+        public string ModifiedBy { get; set; } = "Anonymous";
         [Required]
         public DateTime ModifiedOn { get; set; } = DateTime.UtcNow;
         [Required]
