@@ -41,5 +41,10 @@ namespace Content_App_POC.CommentsMgt
         {
             await _repository.DeleteAsync(id);
         }
+
+        public async Task SetApprovalRecursiveAsync(int commentId, bool isApproved, string modifiedBy)
+        {
+            await _repository.SetApprovalRecursiveAsync(commentId, isApproved, modifiedBy);
+        }
     }
 } 

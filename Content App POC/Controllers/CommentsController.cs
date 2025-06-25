@@ -61,5 +61,19 @@ namespace Content_App_POC.Controllers
             await _commentService.DeleteCommentAsync(id);
             return NoContent();
         }
+
+        [HttpPut("{id}/approval")]
+        public async Task<IActionResult> SetApproval(int id, [FromBody] ApprovalDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            await _commentService.SetApprovalRecursiveAsync(id, dto.IsApproved, dto.ModifiedBy);
+            return NoContent();
+        }
+
+        public class ApprovalDto
+        {
+            public bool IsApproved { get; set; }
+            public string ModifiedBy { get; set; } = string.Empty;
+        }
     }
 } 
