@@ -18,6 +18,26 @@
         return name[0].toUpperCase();
     }
 
+    // Utility: show notification
+    function showNotification(message) {
+        let notif = document.createElement('div');
+        notif.className = 'smc-notification';
+        notif.textContent = message;
+        notif.style.position = 'fixed';
+        notif.style.top = '20px';
+        notif.style.right = '20px';
+        notif.style.background = '#4caf50';
+        notif.style.color = 'white';
+        notif.style.padding = '10px 20px';
+        notif.style.borderRadius = '5px';
+        notif.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        notif.style.zIndex = 9999;
+        document.body.appendChild(notif);
+        setTimeout(() => {
+            notif.remove();
+        }, 2500);
+    }
+
     // Render comments
     function renderComments(comments, userName) {
         // Only include approved and not deleted comments
@@ -41,7 +61,7 @@
                     </div>
                     <div class="smc-comment-body">${comment.commentText}</div>
                     <div class="smc-comment-actions">
-                        <button class="smc-reply-btn" data-id="${comment.id}">Reply</button>
+                        ${parentId === null ? `<button class=\"smc-reply-btn\" data-id=\"${comment.id}\">Reply</button>` : ''}
                     </div>
                     <div class="smc-comment-replies">
                         ${renderList(comment.id)}
@@ -81,11 +101,17 @@
                             createdBy: userName,
                             modifiedBy: userName
                         })
-                    }).then(() => loadComments());
+                    }).then(() => {
+                        showNotification('Comment added and may wait approval!');
+                        loadComments();
+                    });
                 };
                 // Reply buttons
                 container.querySelectorAll('.smc-reply-btn').forEach(btn => {
                     btn.onclick = function() {
+                        // Close any other open reply box
+                        container.querySelectorAll('.smc-reply-box').forEach(box => box.remove());
+                        container.querySelectorAll('.smc-reply-btn').forEach(b => b.disabled = false);
                         const commentId = btn.getAttribute('data-id');
                         const replyBox = document.createElement('div');
                         replyBox.className = 'smc-reply-box';
@@ -108,10 +134,14 @@
                                     createdBy: userName,
                                     modifiedBy: userName
                                 })
-                            }).then(() => loadComments());
+                            }).then(() => {
+                                showNotification('Reply added and may wait approval!');
+                                loadComments();
+                            });
                         };
                         replyBox.querySelector('.smc-cancel-reply').onclick = function() {
                             replyBox.remove();
+                            btn.disabled = false;
                         };
                         btn.disabled = true;
                     };
