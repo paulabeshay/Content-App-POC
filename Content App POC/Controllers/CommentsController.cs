@@ -58,7 +58,9 @@ namespace Content_App_POC.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _commentService.DeleteCommentAsync(id);
+            // Get user name for audit (if available)
+            var userName = User?.Identity?.Name ?? "System";
+            await _commentService.SetDeletedRecursiveAsync(id, userName);
             return NoContent();
         }
 

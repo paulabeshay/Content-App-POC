@@ -282,10 +282,10 @@
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
                         </div>
-                        <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                        <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)" ng-if="comment.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                        </div>
+                        </div>-->
                     </div>
                     <!-- Replies -->
                     <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3" ng-class="{'dimmed-comment': vm.isDimmed(reply)}">
@@ -315,9 +315,9 @@
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)"><i class="fa fa-edit"></i> Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(reply)"><i class="fa fa-trash"></i> Delete</button>
                             </div>
-                            <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                            <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)" ng-if="reply.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <div class="comment-divider" ng-if="!$last"></div>

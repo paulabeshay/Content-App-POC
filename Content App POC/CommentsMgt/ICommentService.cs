@@ -13,5 +13,6 @@ namespace Content_App_POC.CommentsMgt
         Task UpdateCommentAsync(Comment comment);
         Task DeleteCommentAsync(int id);
         Task SetApprovalRecursiveAsync(int commentId, bool isApproved, string modifiedBy);
+        Task SetDeletedRecursiveAsync(int commentId, string modifiedBy);
     }
 } 
