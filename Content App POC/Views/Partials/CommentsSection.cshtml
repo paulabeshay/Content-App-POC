@@ -1,0 +1,204 @@
+@* Social-media-style Comments Section (AJAX loaded) *@
+<style>
+    .smc-add-comment {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.5em;
+        background: #fff;
+        border-radius: 1.2em;
+        box-shadow: 0 2px 12px rgba(24,119,242,0.07), 0 1.5px 4px rgba(0,0,0,0.04);
+        padding: 1.2em 1.7em 1.2em 1.7em;
+        border: 1px solid #e4e6eb;
+    }
+    .smc-add-comment textarea {
+        resize: vertical;
+        border-radius: 1.2em;
+        padding: 0.9em 1.2em;
+        border: 1.5px solid #e4e6eb;
+        background: #f7fafd;
+        margin-bottom: 0.7em;
+        font-size: 1.08em;
+        transition: border 0.2s;
+    }
+    .smc-add-comment textarea:focus {
+        border: 1.5px solid #1877f2;
+        outline: none;
+        background: #fff;
+    }
+    .smc-add-comment button {
+        align-self: flex-end;
+        background: linear-gradient(90deg, #1877f2 60%, #42a5f5 100%);
+        color: #fff;
+        border: none;
+        border-radius: 1em;
+        padding: 0.5em 1.5em;
+        font-weight: 600;
+        font-size: 1.05em;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(24,119,242,0.08);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .smc-add-comment button:hover {
+        background: linear-gradient(90deg, #0d5aa7 60%, #1877f2 100%);
+        box-shadow: 0 4px 16px rgba(24,119,242,0.13);
+    }
+    .smc-comments-list {
+        margin-top: 1em;
+    }
+    .smc-comment-card {
+        background: #fff;
+        border-radius: 1.2em;
+        box-shadow: 0 2px 12px rgba(24,119,242,0.07), 0 1.5px 4px rgba(0,0,0,0.04);
+        margin-bottom: 1.2em;
+        padding: 1.1em 1.7em 1.1em 1.7em;
+        position: relative;
+        border: 1px solid #e4e6eb;
+        transition: box-shadow 0.2s, border 0.2s;
+    }
+    .smc-comment-card:hover {
+        box-shadow: 0 6px 24px rgba(24,119,242,0.13);
+        border: 1.5px solid #1877f2;
+    }
+    .smc-comment-unapproved {
+        background: #f8d7da;
+        border: 1.5px solid #f5c2c7;
+    }
+    .smc-comment-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5em;
+    }
+    .smc-comment-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e4e6eb 60%, #f0f2f5 100%);
+        color: #1877f2;
+        font-weight: bold;
+        font-size: 1.25em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.1em;
+        flex-shrink: 0;
+        box-shadow: 0 1.5px 6px rgba(24,119,242,0.07);
+        border: 2px solid #fff;
+    }
+    .smc-comment-meta {
+        flex: 1;
+    }
+    .smc-comment-author {
+        font-weight: 600;
+        color: #1877f2;
+        margin-right: 0.7em;
+        font-size: 1.08em;
+    }
+    .smc-comment-date {
+        font-size: 0.93em;
+        color: #888;
+    }
+    .smc-comment-body {
+        font-size: 1.13em;
+        line-height: 1.6;
+        margin-bottom: 0.5em;
+        color: #222;
+        word-break: break-word;
+    }
+    .smc-comment-actions {
+        margin-bottom: 0.5em;
+        display: flex;
+        gap: 0.7em;
+    }
+    .smc-reply-btn {
+        background: none;
+        border: none;
+        color: #1877f2;
+        font-size: 1em;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0.2em 0.7em;
+        border-radius: 0.7em;
+        transition: background 0.15s, color 0.15s;
+    }
+    .smc-reply-btn:hover {
+        color: #fff;
+        background: #1877f2;
+    }
+    .smc-comment-replies {
+        margin-left: 2.5em;
+        margin-top: 0.5em;
+        border-left: 2.5px solid #e4e6eb;
+        padding-left: 1.2em;
+        position: relative;
+    }
+    .smc-comment-replies:empty {
+        border-left: none;
+        padding-left: 0;
+    }
+    .smc-reply-box {
+        margin-top: 0.7em;
+        background: #f0f2f5;
+        border-radius: 1em;
+        padding: 0.7em 1em;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 1.5px 6px rgba(24,119,242,0.07);
+        border: 1px solid #e4e6eb;
+    }
+    .smc-reply-box textarea {
+        border-radius: 1em;
+        border: 1.5px solid #e4e6eb;
+        margin-bottom: 0.5em;
+        padding: 0.5em 1em;
+        font-size: 1.05em;
+        background: #fff;
+        transition: border 0.2s;
+    }
+    .smc-reply-box textarea:focus {
+        border: 1.5px solid #1877f2;
+        outline: none;
+    }
+    .smc-reply-box button {
+        align-self: flex-end;
+        margin-left: 0.5em;
+        background: linear-gradient(90deg, #1877f2 60%, #42a5f5 100%);
+        color: #fff;
+        border: none;
+        border-radius: 1em;
+        padding: 0.3em 1.1em;
+        font-weight: 600;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 1.5px 6px rgba(24,119,242,0.07);
+    }
+    .smc-reply-box .smc-cancel-reply {
+        background: #888;
+        color: #fff;
+        margin-left: 0.5em;
+        background: linear-gradient(90deg, #888 60%, #bbb 100%);
+    }
+    .smc-reply-box button:hover {
+        background: linear-gradient(90deg, #0d5aa7 60%, #1877f2 100%);
+    }
+    /* media (max-width: 600px) {
+        .smc-add-comment, .smc-comment-card {
+            padding: 0.7em 0.7em;
+        }
+        .smc-comment-replies {
+            margin-left: 1em;
+            padding-left: 0.5em;
+        }
+        .smc-comment-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 1em;
+        }
+    } */
+</style>
+<script>
+    window.currentContentId = @(Model?.Id ?? 0);
+    window.currentUserName = '@(User?.Identity?.Name ?? "")';
+</script>
+<div id="comments-section-container" class="comments-section-social"></div>
+<script src="/clean-assets/js/comments-section.js"></script> 
