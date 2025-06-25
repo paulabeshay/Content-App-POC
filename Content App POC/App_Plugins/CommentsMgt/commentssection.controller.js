@@ -165,4 +165,27 @@ angular.module("umbraco")
             vm.CanAdminComments = checkCommentsAdmin(user.userGroups);
         });
 
+        // Toggle approval for a comment and its children
+        vm.toggleApproval = function(comment) {
+            var newStatus = !comment.isApproved;
+            $http.put('/api/comments/' + comment.id + '/approval', {
+                isApproved: newStatus,
+                modifiedBy: vm.UserName
+            }).then(function() {
+                vm.loadComments();
+            });
+        };
+
+        // Helper to check if a comment or any parent is disapproved
+        vm.isDimmed = function(comment) {
+            if (!comment.isApproved) return true;
+            var parentId = comment.parentCommentId;
+            while (parentId) {
+                var parent = vm.Comments.find(function(c) { return c.id === parentId; });
+                if (parent && !parent.isApproved) return true;
+                parentId = parent ? parent.parentCommentId : null;
+            }
+            return false;
+        };
+
     });

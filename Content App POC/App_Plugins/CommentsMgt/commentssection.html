@@ -133,6 +133,72 @@
         .reply-button:hover {
             color: #0d5aa7;
         }
+        .dimmed-comment {
+            position: relative;
+        }
+        .dimmed-comment::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 1.2em;
+            z-index: 1;
+        }
+        .dimmed-comment > * {
+            position: relative;
+            z-index: 2;
+        }
+        .form-switch {
+            display: inline-block;
+            position: relative;
+            width: 40px;
+            height: 22px;
+            margin-right: 8px;
+        }
+        .form-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .form-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 22px;
+        }
+        .form-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .form-switch input:checked + .slider {
+            background-color: #1877f2;
+        }
+        .form-switch input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+        .approval-status {
+            font-size: 0.85em;
+            color: #666;
+            margin-left: 0.5em;
+        }
+        .approval-status i {
+            margin-right: 0.3em;
+        }
     </style>
     <umb-box>
         <umb-box-header title="Current Node and User Info"></umb-box-header>
@@ -187,17 +253,28 @@
                 </div>
             </div>
             <div class="comments-list">
-                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3" style="padding:15px;">
-                    <div class="comment-header">
+                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3" style="padding:15px;" ng-class="{'dimmed-comment': vm.isDimmed(comment)}">
+                    <div class="comment-header d-flex justify-content-between align-items-center">
                         <div class="comment-avatar">
                             <i class="fa fa-user" aria-hidden="true"></i>
                             <!--{{vm.getInitials(comment.createdBy)}}-->
                         </div>
-                        <div>
-                            <span class="comment-author">{{comment.createdBy}}</span><br/>
+                        <div style="flex:1;">
+                            <span class="comment-author">{{comment.createdBy}}</span><br />
                             <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
                         </div>
+                        <div class="d-flex flex-row align-items-center mb-2 ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                            <label class="form-switch">
+                                <input type="checkbox" ng-checked="comment.isApproved" ng-click="vm.toggleApproval(comment)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="approval-status">
+                                <i class="fa" ng-class="{'fa-check-circle': comment.isApproved, 'fa-times-circle': !comment.isApproved}"></i>
+                                {{comment.isApproved ? 'Approved' : 'Not Approved'}}
+                            </span>
+                        </div>
                     </div>
+                    
                     <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
                         <div class="comment-text" style="width: 58%;">{{comment.commentText}}</div>
                         <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
@@ -211,15 +288,25 @@
                         </div>
                     </div>
                     <!-- Replies -->
-                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3">
-                        <div class="comment-header">
+                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3" ng-class="{'dimmed-comment': vm.isDimmed(reply)}">
+                        <div class="comment-header d-flex justify-content-between align-items-center">
                             <div class="comment-avatar">
                                 <i class="fa fa-user" aria-hidden="true"></i>
                                 <!--{{vm.getInitials(reply.createdBy)}}-->
                             </div>
-                            <div>
-                                <span class="comment-author">{{reply.createdBy}}</span><br/>
+                            <div style="flex:1;">
+                                <span class="comment-author">{{reply.createdBy}}</span><br />
                                 <span class="comment-date">{{reply.createdOn | date:'short'}}</span>
+                            </div>
+                            <div class="d-flex flex-row align-items-center mb-2 ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                                <label class="form-switch">
+                                    <input type="checkbox" ng-checked="reply.isApproved" ng-click="vm.toggleApproval(reply)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="approval-status">
+                                    <i class="fa" ng-class="{'fa-check-circle': reply.isApproved, 'fa-times-circle': !reply.isApproved}"></i>
+                                    {{reply.isApproved ? 'Approved' : 'Not Approved'}}
+                                </span>
                             </div>
                         </div>
                         <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
