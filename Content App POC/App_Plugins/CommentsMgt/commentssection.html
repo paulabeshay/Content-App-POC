@@ -259,12 +259,12 @@
                             <i class="fa fa-user" aria-hidden="true"></i>
                             <!--{{vm.getInitials(comment.createdBy)}}-->
                         </div>
-                        <div style="flex:1;">
+                        <div>
                             <span class="comment-author">{{comment.createdBy}}</span><br />
                             <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
                         </div>
-                        <div class="d-flex flex-row align-items-center mb-2 ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
-                            <label class="form-switch">
+                        <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                            <label class="form-switch mb-0">
                                 <input type="checkbox" ng-checked="comment.isApproved" ng-click="vm.toggleApproval(comment)">
                                 <span class="slider"></span>
                             </label>
@@ -294,12 +294,12 @@
                                 <i class="fa fa-user" aria-hidden="true"></i>
                                 <!--{{vm.getInitials(reply.createdBy)}}-->
                             </div>
-                            <div style="flex:1;">
+                            <div>
                                 <span class="comment-author">{{reply.createdBy}}</span><br />
                                 <span class="comment-date">{{reply.createdOn | date:'short'}}</span>
                             </div>
-                            <div class="d-flex flex-row align-items-center mb-2 ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
-                                <label class="form-switch">
+                            <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                                <label class="form-switch mb-0">
                                     <input type="checkbox" ng-checked="reply.isApproved" ng-click="vm.toggleApproval(reply)">
                                     <span class="slider"></span>
                                 </label>
