@@ -19,6 +19,7 @@ angular.module("umbraco")
         vm.newCommentText = '';
         vm.editingCommentText = '';
         vm.replyText = '';
+        vm.AdminCanAddComment = false;
 
         // Fetch comments for the current content id
         vm.loadComments = function() {
@@ -187,5 +188,12 @@ angular.module("umbraco")
             }
             return false;
         };
+
+        // Fetch AdminCanAddComment setting from backend
+        $http.get('/api/comments/admin-can-add-comment').then(function(response) {
+            vm.AdminCanAddComment = response.data.adminCanAddComment;
+        }, function(error) {
+            console.error('Failed to fetch AdminCanAddComment', error);
+        });
 
     });

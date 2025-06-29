@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Content_App_POC.CommentsMgt;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Content_App_POC.Controllers
 {
@@ -10,10 +11,12 @@ namespace Content_App_POC.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly ICommentService _commentService;
+        private readonly IConfiguration _configuration;
 
-        public CommentsController(ICommentService commentService)
+        public CommentsController(ICommentService commentService, IConfiguration configuration)
         {
             _commentService = commentService;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -42,6 +45,9 @@ namespace Content_App_POC.Controllers
         public async Task<IActionResult> Create([FromBody] Comment comment)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            // Set IsApproved based on CommentsAutoApproved from config
+            var autoApprovedValue = _configuration["CommentsConfig:CommentsAutoApproved"];
+            comment.IsApproved = string.Equals(autoApprovedValue, "true", StringComparison.OrdinalIgnoreCase);
             await _commentService.AddCommentAsync(comment);
             return CreatedAtAction(nameof(GetById), new { id = comment.Id }, comment);
         }
@@ -70,6 +76,15 @@ namespace Content_App_POC.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             await _commentService.SetApprovalRecursiveAsync(id, dto.IsApproved, dto.ModifiedBy);
             return NoContent();
+        }
+
+        [HttpGet("admin-can-add-comment")]
+        public IActionResult GetAdminCanAddComment()
+        {
+            var value = _configuration["CommentsConfig:AdminCanAddComment"];
+            // Default to false if not set or not "true"
+            bool canAdd = string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+            return Ok(new { adminCanAddComment = canAdd });
         }
 
         public class ApprovalDto
