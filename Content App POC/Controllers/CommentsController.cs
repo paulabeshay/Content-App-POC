@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Content_App_POC.CommentsMgt;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace Content_App_POC.Controllers
 {
@@ -11,12 +10,10 @@ namespace Content_App_POC.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly ICommentService _commentService;
-        private readonly IConfiguration _configuration;
 
-        public CommentsController(ICommentService commentService, IConfiguration configuration)
+        public CommentsController(ICommentService commentService)
         {
             _commentService = commentService;
-            _configuration = configuration;
         }
 
         [HttpGet]
@@ -62,7 +59,7 @@ namespace Content_App_POC.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             // Get user name for audit (if available)
-            var userName = User?.Identity?.Name ?? "Administrator";
+            var userName = User?.Identity?.Name ?? "System";
             await _commentService.SetDeletedRecursiveAsync(id, userName);
             return NoContent();
         }
@@ -73,21 +70,6 @@ namespace Content_App_POC.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             await _commentService.SetApprovalRecursiveAsync(id, dto.IsApproved, dto.ModifiedBy);
             return NoContent();
-        }
-
-        [HttpGet("config")]
-        public IActionResult GetConfig()
-        {
-            var config = new
-            {
-                CommentsAdminRole = _configuration["CommentsConfig:CommentsAdminRole"],
-                CommentsViewerRole = _configuration["CommentsConfig:CommentsViewerRole"],
-                CMSDisplayToggle = _configuration["CommentsConfig:CMSDisplayToggle"],
-                PortalDisplayToggle = _configuration["CommentsConfig:PortalDisplayToggle"],
-                AdminCanAddComment = _configuration["CommentsConfig:AdminCanAddComment"],
-                CommentsAutoApproved = _configuration.GetValue<bool>("CommentsConfig:CommentsAutoApproved", false)
-            };
-            return Ok(config);
         }
 
         public class ApprovalDto

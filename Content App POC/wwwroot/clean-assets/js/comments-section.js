@@ -4,20 +4,6 @@
     const container = document.getElementById('comments-section-container');
     if (!container) return;
 
-    let config = null;
-
-    // Load configuration
-    async function loadConfig() {
-        try {
-            const response = await fetch(apiBase + '/config');
-            config = await response.json();
-            console.log('Comments config loaded:', config);
-        } catch (error) {
-            console.error('Failed to load comments config:', error);
-            config = { CommentsAutoApproved: false };
-        }
-    }
-
     // Utility: format date
     function formatDate(dateStr) {
         const d = new Date(dateStr);
@@ -50,15 +36,6 @@
         setTimeout(() => {
             notif.remove();
         }, 2500);
-    }
-
-    // Get appropriate notification message
-    function getNotificationMessage(isReply = false) {
-        if (config && config.CommentsAutoApproved) {
-            return isReply ? 'Reply added and approved!' : 'Comment added and approved!';
-        } else {
-            return isReply ? 'Reply added and pending approval!' : 'Comment added and pending approval!';
-        }
     }
 
     // Render comments
@@ -125,7 +102,7 @@
                             modifiedBy: userName
                         })
                     }).then(() => {
-                        showNotification(getNotificationMessage(false));
+                        showNotification('Comment added and may wait approval!');
                         loadComments();
                     });
                 };
@@ -158,7 +135,7 @@
                                     modifiedBy: userName
                                 })
                             }).then(() => {
-                                showNotification(getNotificationMessage(true));
+                                showNotification('Reply added and may wait approval!');
                                 loadComments();
                             });
                         };
@@ -176,8 +153,5 @@
     window.currentContentId = window.currentContentId || 0;
     window.currentUserName = window.currentUserName || 'Anonymous';
 
-    // Initialize: load config first, then comments
-    loadConfig().then(() => {
-        loadComments();
-    });
+    loadComments();
 })(); 

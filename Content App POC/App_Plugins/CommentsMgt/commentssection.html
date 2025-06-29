@@ -217,10 +217,6 @@
         </umb-box-content>
         <umb-box-content>
             <h4 class="mb-3">Comments</h4>
-            <!-- Approval Status Message -->
-            <div class="alert alert-info mb-3" ng-if="vm.config">
-                <i class="fa fa-info-circle"></i> {{vm.getApprovalStatusMessage()}}
-            </div>
             <div ng-if="vm.CanEditComments" class="add-comment-form mb-4">
                 <div class="add-comment-avatar">
                     {{vm.getInitials(vm.UserName)}}
