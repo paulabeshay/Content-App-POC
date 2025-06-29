@@ -1,15 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Content_App_POC.CommentsMgt
 {
     public class CommentService : ICommentService
     {
         private readonly ICommentRepository _repository;
-        public CommentService(ICommentRepository repository)
+        private readonly IConfiguration _configuration;
+
+        public CommentService(ICommentRepository repository, IConfiguration configuration)
         {
             _repository = repository;
+            _configuration = configuration;
         }
 
         public async Task<Comment?> GetCommentByIdAsync(int id)
@@ -29,6 +33,10 @@ namespace Content_App_POC.CommentsMgt
 
         public async Task AddCommentAsync(Comment comment)
         {
+            // Check if comments should be auto-approved
+            var autoApproved = _configuration.GetValue<bool>("CommentsConfig:CommentsAutoApproved", false);
+            comment.IsApproved = autoApproved;
+            
             await _repository.AddAsync(comment);
         }
 

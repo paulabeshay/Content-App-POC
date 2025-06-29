@@ -19,6 +19,33 @@ angular.module("umbraco")
         vm.newCommentText = '';
         vm.editingCommentText = '';
         vm.replyText = '';
+        vm.config = null;
+
+        // Load configuration
+        vm.loadConfig = function() {
+            return $http.get("/api/comments/config")
+                .then(function(response) {
+                    vm.config = response.data;
+                    console.log("Comments config loaded:", vm.config);
+                    // Re-check admin permissions if user is already loaded
+                    if (vm.UserGroups) {
+                        vm.CanAdminComments = checkCommentsAdmin(vm.UserGroups);
+                    }
+                }, function(error) {
+                    console.error("Failed to load comments config", error);
+                    // Fallback to default values
+                    vm.config = { 
+                        CommentsAdminRole: "CommentsAdmin",
+                        CommentsAutoApproved: false
+                    };
+                    // Re-check admin permissions if user is already loaded
+                    if (vm.UserGroups) {
+                        vm.CanAdminComments = checkCommentsAdmin(vm.UserGroups);
+                    }
+                });
+        };
+
+        vm.loadConfig();
 
         // Fetch comments for the current content id
         vm.loadComments = function() {
@@ -33,11 +60,12 @@ angular.module("umbraco")
         vm.loadComments();
 
         function checkCommentsAdmin(userGroups) {
-            if (!userGroups) return false;
+            if (!userGroups || !vm.config) return false;
+            var adminRole = vm.config.CommentsAdminRole || "CommentsAdmin";
             return userGroups.some(function (g) {
-                if (typeof g === 'string') return g.toLowerCase() === 'commentsadmin';
-                if (g && g.name) return g.name.toLowerCase() === 'commentsadmin';
-                if (g && g.alias) return g.alias.toLowerCase() === 'commentsadmin';
+                if (typeof g === 'string') return g.toLowerCase() === adminRole.toLowerCase();
+                if (g && g.name) return g.name.toLowerCase() === adminRole.toLowerCase();
+                if (g && g.alias) return g.alias.toLowerCase() === adminRole.toLowerCase();
                 return false;
             });
         }
@@ -108,6 +136,12 @@ angular.module("umbraco")
                 vm.newCommentText = '';
                 vm.closeAddModal();
                 vm.loadComments();
+                // Show appropriate message based on auto-approval setting
+                if (vm.config && vm.config.CommentsAutoApproved) {
+                    console.log("Comment added and automatically approved!");
+                } else {
+                    console.log("Comment added and pending approval!");
+                }
             });
         };
 
@@ -145,6 +179,12 @@ angular.module("umbraco")
             $http.post('/api/comments', reply).then(function() {
                 vm.closeReplyModal();
                 vm.loadComments();
+                // Show appropriate message based on auto-approval setting
+                if (vm.config && vm.config.CommentsAutoApproved) {
+                    console.log("Reply added and automatically approved!");
+                } else {
+                    console.log("Reply added and pending approval!");
+                }
             });
         };
 
@@ -162,6 +202,7 @@ angular.module("umbraco")
         var user = userService.getCurrentUser().then(function (user) {
             vm.UserName = user.name;
             vm.UserGroups = user.userGroups;
+            // Check admin permissions (config should be loaded by now)
             vm.CanAdminComments = checkCommentsAdmin(user.userGroups);
         });
 
@@ -186,6 +227,15 @@ angular.module("umbraco")
                 parentId = parent ? parent.parentCommentId : null;
             }
             return false;
+        };
+
+        // Helper function to get approval status message
+        vm.getApprovalStatusMessage = function() {
+            if (vm.config && vm.config.CommentsAutoApproved) {
+                return "Comments are automatically approved.";
+            } else {
+                return "Comments require admin approval before being visible.";
+            }
         };
 
     });
