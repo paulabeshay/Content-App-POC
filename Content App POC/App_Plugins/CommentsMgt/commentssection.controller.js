@@ -25,7 +25,7 @@ angular.module("umbraco")
         // Fetch parent node alias
         contentResource.getById(editorState.current.parentId).then(function (parentNode) {
             vm.CurrentNodeParentAlias = parentNode.contentTypeAlias;
-            console.log("Parent Content Alias: " + vm.CurrentNodeParentAlias);
+            console.log("Parent Content Alias:: " + vm.CurrentNodeParentAlias);
         }, function (error) {
             console.error('Failed to fetch parent node alias', error);
         });
