@@ -200,4 +200,39 @@ angular.module("umbraco")
             return parent && !parent.shownInPortal;
         };
 
+        // Helper to check if a comment's parent is approved
+        vm.isParentApproved = function(comment) {
+            if (!comment.parentId) return true;
+            var parent = vm.Comments.find(function(c) { return c.id === comment.parentId; });
+            return parent && parent.commentStatusId === 2; // 2 = Approved
+        };
+
+        // Status options for dropdown
+        vm.statusOptions = [
+            { id: 1, label: 'Pending' },
+            { id: 2, label: 'Approved' },
+            { id: 3, label: 'Rejected' }
+        ];
+
+        // Update comment status
+        vm.updateCommentStatus = function(comment, cascade) {
+            // If status is Pending or Rejected, always set shownInPortal to false and disable toggle
+            if (comment.commentStatusId === 1 || comment.commentStatusId === 3) { // 1 = Pending, 3 = Rejected
+                comment.shownInPortal = false;
+            } else if (comment.commentStatusId === 2) { // 2 = Approved
+                comment.shownInPortal = true;
+            }
+            var url = '/api/comments/' + comment.id + '/status?newStatusId=' + comment.commentStatusId + '&cascade=' + !!cascade;
+            $http.put(url).then(function() {
+                vm.loadComments();
+            }, function(error) {
+                alert('Failed to update comment status');
+            });
+        };
+
+        // Helper to determine if shownInPortal toggle should be disabled
+        vm.isShownInPortalDisabled = function(comment) {
+            return comment.commentStatusId !== 2; // Only enabled if Approved
+        };
+
     });

@@ -61,5 +61,20 @@ namespace Content_App_POC.Controllers
             await _commentService.DeleteCommentAsync(id);
             return NoContent();
         }
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(Guid id, [FromQuery] int newStatusId, [FromQuery] bool cascade = false)
+        {
+            // Update the status of the comment
+            await _commentService.UpdateCommentStatusAsync(id, newStatusId);
+
+            // If cascade is true, update all children
+            if (cascade)
+            {
+                await _commentService.CascadeStatusToChildrenAsync(id, newStatusId);
+            }
+
+            return NoContent();
+        }
     }
 } 

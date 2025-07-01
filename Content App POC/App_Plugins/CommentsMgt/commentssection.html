@@ -223,8 +223,8 @@
             </div>
             <div class="comments-list">
                 <div ng-repeat="comment in vm.Comments | filter:{parentId: null}" class="card comments-section-card p-3" style="padding:15px; position:relative;">
-                    <!-- Overlay if not shown in portal -->
-                    <div ng-if="!comment.shownInPortal" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,220,220,0.7);z-index:10;pointer-events:none;"></div>
+                    <!-- Overlay if not shown in portal or status is Pending/Rejected -->
+                    <div ng-if="!comment.shownInPortal || comment.commentStatusId !== 2" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,220,220,0.7);z-index:10;pointer-events:none;"></div>
                     <div class="comment-header" style="display: flex; align-items: center; justify-content: space-between;">
                         <div style="display: flex; align-items: center;">
                             <div class="comment-avatar">
@@ -235,13 +235,17 @@
                                 <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
                             </div>
                         </div>
-                        <!-- Toggle for ShownInPortal (admin only) -->
-                        <div style="display: flex;" ng-if="vm.CanAdminComments">
-                            <label class="switch">
-                                <input type="checkbox" ng-model="comment.shownInPortal" ng-change="vm.toggleShownInPortal(comment)">
-                                <span class="slider round"></span>
-                            </label>
-                            <span style="margin-left:0.5em;">{{comment.shownInPortal ? 'Shown' : 'Hidden'}}</span>
+                        <div style="display: flex; align-items: center;">
+                            <!-- Status Dropdown for Parent Comment (moved to right end) -->
+                            <select class="form-select form-select-sm me-2" style="margin-right: 5px;" ng-if="vm.CanAdminComments" ng-model="comment.commentStatusId" ng-options="opt.id as opt.label for opt in vm.statusOptions" ng-change="vm.updateCommentStatus(comment, true)"></select>
+                            <!-- Toggle for ShownInPortal (admin only) -->
+                            <div style="display: flex;" ng-if="vm.CanAdminComments">
+                                <label class="switch">
+                                    <input type="checkbox" ng-model="comment.shownInPortal" ng-change="vm.toggleShownInPortal(comment)" ng-disabled="vm.isShownInPortalDisabled(comment)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span style="margin-left:0.5em;">{{comment.shownInPortal ? 'Shown' : 'Hidden'}}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
@@ -258,8 +262,8 @@
                     </div>
                     <!-- Replies -->
                     <div ng-repeat="reply in vm.Comments | filter:{parentId: comment.id}" style="padding: 15px; position:relative;" class="card comments-section-card comment-reply p-3">
-                        <!-- Overlay if not shown in portal or parent not shown in portal -->
-                        <div ng-if="!reply.shownInPortal || vm.isParentNotShownInPortal(reply)" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,220,220,0.7);z-index:10;pointer-events:none;"></div>
+                        <!-- Overlay if not shown in portal or parent not shown in portal or status is Pending/Rejected -->
+                        <div ng-if="!reply.shownInPortal || vm.isParentNotShownInPortal(reply) || reply.commentStatusId !== 2" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,220,220,0.7);z-index:10;pointer-events:none;"></div>
                         <div class="comment-header" style="display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center;">
                                 <div class="comment-avatar">
@@ -270,13 +274,17 @@
                                     <span class="comment-date">{{reply.createdOn | date:'short'}} </span>
                                 </div>
                             </div>
-                            <!-- Toggle for ShownInPortal (admin only) -->
-                            <div style="display: flex;" ng-if="vm.CanAdminComments">
-                                <label class="switch">
-                                    <input type="checkbox" ng-model="reply.shownInPortal" ng-change="vm.toggleShownInPortal(reply)" ng-disabled="vm.isParentNotShownInPortal(reply)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span style="margin-left:0.5em;">{{reply.shownInPortal ? 'Shown' : 'Hidden'}}</span>
+                            <div style="display: flex; align-items: center;">
+                                <!-- Status Dropdown for Child Comment (moved to right end) -->
+                                <select class="form-select form-select-sm me-2" style="margin-right: 5px;" ng-if="vm.CanAdminComments" ng-model="reply.commentStatusId" ng-options="opt.id as opt.label for opt in vm.statusOptions" ng-change="vm.updateCommentStatus(reply, false)" ng-disabled="!vm.isParentApproved(reply)"></select>
+                                <!-- Toggle for ShownInPortal (admin only) -->
+                                <div style="display: flex;" ng-if="vm.CanAdminComments">
+                                    <label class="switch">
+                                        <input type="checkbox" ng-model="reply.shownInPortal" ng-change="vm.toggleShownInPortal(reply)" ng-disabled="vm.isParentNotShownInPortal(reply) || vm.isShownInPortalDisabled(reply)">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span style="margin-left:0.5em;">{{reply.shownInPortal ? 'Shown' : 'Hidden'}}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">

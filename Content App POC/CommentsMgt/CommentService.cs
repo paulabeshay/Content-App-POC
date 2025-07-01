@@ -41,5 +41,15 @@ namespace Content_App_POC.CommentsMgt
         {
             await _repository.DeleteAsync(id);
         }
+
+        public async Task UpdateCommentStatusAsync(Guid commentId, int newStatusId)
+        {
+            await _repository.UpdateCommentStatusAsync(commentId, newStatusId);
+        }
+
+        public async Task CascadeStatusToChildrenAsync(Guid parentId, int newStatusId)
+        {
+            await _repository.CascadeStatusToChildrenAsync(parentId, newStatusId);
+        }
     }
 } 

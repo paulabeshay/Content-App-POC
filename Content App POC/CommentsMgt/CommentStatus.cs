@@ -23,4 +23,11 @@ namespace Content_App_POC.CommentsMgt
         [Required]
         public bool IsDeleted { get; set; }
     }
+
+    public enum CommentStatusesEnum
+    {
+        Pending = 1,
+        Approved = 2,
+        Rejected = 3
+    }
 } 

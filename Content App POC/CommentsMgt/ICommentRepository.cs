@@ -12,5 +12,7 @@ namespace Content_App_POC.CommentsMgt
         Task AddAsync(Comment comment);
         Task UpdateAsync(Comment comment);
         Task DeleteAsync(Guid id);
+        Task UpdateCommentStatusAsync(Guid commentId, int newStatusId);
+        Task CascadeStatusToChildrenAsync(Guid parentId, int newStatusId);
     }
 } 
