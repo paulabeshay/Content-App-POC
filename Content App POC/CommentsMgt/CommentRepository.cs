@@ -14,7 +14,7 @@ namespace Content_App_POC.CommentsMgt
             _context = context;
         }
 
-        public async Task<Comment?> GetByIdAsync(int id)
+        public async Task<Comment?> GetByIdAsync(Guid id)
         {
             return await _context.Comments.FindAsync(id);
         }
@@ -43,7 +43,7 @@ namespace Content_App_POC.CommentsMgt
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var comment = await _context.Comments.FindAsync(id);
             if (comment != null)

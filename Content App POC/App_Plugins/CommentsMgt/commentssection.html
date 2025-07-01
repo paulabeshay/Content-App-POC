@@ -253,8 +253,8 @@
                 </div>
             </div>
             <div class="comments-list">
-                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3" style="padding:15px;" ng-class="{'dimmed-comment': vm.isDimmed(comment)}">
-                    <div class="comment-header d-flex justify-content-between align-items-center">
+                <div ng-repeat="comment in vm.Comments | filter:{parentId: null}" class="card comments-section-card p-3" style="padding:15px;">
+                    <div class="comment-header">
                         <div class="comment-avatar">
                             <i class="fa fa-user" aria-hidden="true"></i>
                             <!--{{vm.getInitials(comment.createdBy)}}-->
@@ -288,8 +288,8 @@
                         </div>-->
                     </div>
                     <!-- Replies -->
-                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3" ng-class="{'dimmed-comment': vm.isDimmed(reply)}">
-                        <div class="comment-header d-flex justify-content-between align-items-center">
+                    <div ng-repeat="reply in vm.Comments | filter:{parentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3">
+                        <div class="comment-header">
                             <div class="comment-avatar">
                                 <i class="fa fa-user" aria-hidden="true"></i>
                                 <!--{{vm.getInitials(reply.createdBy)}}-->

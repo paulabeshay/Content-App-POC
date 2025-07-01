@@ -12,7 +12,7 @@ namespace Content_App_POC.CommentsMgt
             _repository = repository;
         }
 
-        public async Task<Comment?> GetCommentByIdAsync(int id)
+        public async Task<Comment?> GetCommentByIdAsync(Guid id)
         {
             return await _repository.GetByIdAsync(id);
         }
@@ -37,7 +37,7 @@ namespace Content_App_POC.CommentsMgt
             await _repository.UpdateAsync(comment);
         }
 
-        public async Task DeleteCommentAsync(int id)
+        public async Task DeleteCommentAsync(Guid id)
         {
             await _repository.DeleteAsync(id);
         }
