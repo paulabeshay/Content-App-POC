@@ -43,7 +43,7 @@ namespace Content_App_POC.CommentsMgt
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id) 
         {
             var comment = await _context.Comments.FindAsync(id);
             if (comment != null)
