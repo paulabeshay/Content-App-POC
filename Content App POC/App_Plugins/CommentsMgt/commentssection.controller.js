@@ -20,6 +20,7 @@ angular.module("umbraco")
         vm.newCommentText = '';
         vm.editingCommentText = '';
         vm.replyText = '';
+        vm.AdminCanAddComment = false;
 
         // Fetch parent node alias
         contentResource.getById(editorState.current.parentId).then(function (parentNode) {

@@ -198,7 +198,7 @@
                 </form>
             </div>
             <!-- Add Comment Button (admin only) -->
-            <div class="mb-3" ng-if="vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
+            <div class="mb-3" ng-if="vm.AdminCanAddComment && vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
                 <button class="btn btn-success btn-sm" ng-click="vm.openAddModal()">
                     <i class="fa fa-plus"></i> Add Comment
                 </button>
@@ -243,18 +243,29 @@
                             </label>
                             <span style="margin-left:0.5em;">{{comment.shownInPortal ? 'Shown' : 'Hidden'}}</span>
                         </div>
+                        <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                            <label class="form-switch mb-0">
+                                <input type="checkbox" ng-checked="comment.isApproved" ng-click="vm.toggleApproval(comment)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="approval-status">
+                                <i class="fa" ng-class="{'fa-check-circle': comment.isApproved, 'fa-times-circle': !comment.isApproved}"></i>
+                                {{comment.isApproved ? 'Approved' : 'Not Approved'}}
+                            </span>
+                        </div>
                     </div>
+                    
                     <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
                         <div class="comment-text" style="width: 58%;">{{comment.commentText}}</div>
                         <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
-                            <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
+                            <button class="btn btn-outline-primary btn-sm me-2" ng-if="vm.AdminCanAddComment" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
                         </div>
-                        <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                        <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)" ng-if="comment.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                        </div>
+                        </div>-->
                     </div>
                     <!-- Replies -->
                     <div ng-repeat="reply in vm.Comments | filter:{parentId: comment.id}" style="padding: 15px; position:relative;" class="card comments-section-card comment-reply p-3">
@@ -278,6 +289,16 @@
                                 </label>
                                 <span style="margin-left:0.5em;">{{reply.shownInPortal ? 'Shown' : 'Hidden'}}</span>
                             </div>
+                            <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                                <label class="form-switch mb-0">
+                                    <input type="checkbox" ng-checked="reply.isApproved" ng-click="vm.toggleApproval(reply)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="approval-status">
+                                    <i class="fa" ng-class="{'fa-check-circle': reply.isApproved, 'fa-times-circle': !reply.isApproved}"></i>
+                                    {{reply.isApproved ? 'Approved' : 'Not Approved'}}
+                                </span>
+                            </div>
                         </div>
                         <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
                             <div class="comment-text" style="width: 65%;">{{reply.commentText}}</div>
@@ -285,9 +306,9 @@
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)"><i class="fa fa-edit"></i> Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(reply)"><i class="fa fa-trash"></i> Delete</button>
                             </div>
-                            <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                            <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)" ng-if="reply.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <div class="comment-divider" ng-if="!$last"></div>
@@ -346,7 +367,7 @@
                             </div>
                             <textarea ng-model="vm.replyText" class="form-control" style="width: 100%;" rows="3" placeholder="Write your reply..."></textarea>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer d-flex flex-row justify-content-between" style="gap: 1em;">
                             <button class="btn btn-secondary" ng-click="vm.closeReplyModal()">Cancel</button>
                             <button class="btn btn-primary" ng-click="vm.submitReply()">Reply</button>
                         </div>
