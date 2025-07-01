@@ -181,34 +181,24 @@ angular.module("umbraco")
             vm.CanAdminComments = checkCommentsAdmin(user.userGroups);
         });
 
-        // Toggle approval for a comment and its children
-        vm.toggleApproval = function(comment) {
-            var newStatus = !comment.isApproved;
-            $http.put('/api/comments/' + comment.id + '/approval', {
-                isApproved: newStatus,
-                modifiedBy: vm.UserName
-            }).then(function() {
+        // Toggle ShownInPortal for a comment
+        vm.toggleShownInPortal = function(comment) {
+            var updated = angular.copy(comment);
+            updated.modifiedBy = vm.UserName;
+            $http.put('/api/comments/' + updated.id, updated).then(function() {
                 vm.loadComments();
+            }, function(error) {
+                // Optionally revert the toggle on error
+                comment.shownInPortal = !comment.shownInPortal;
+                alert('Failed to update Shown In Portal');
             });
         };
 
-        // Helper to check if a comment or any parent is disapproved
-        vm.isDimmed = function(comment) {
-            if (!comment.isApproved) return true;
-            var parentId = comment.parentCommentId;
-            while (parentId) {
-                var parent = vm.Comments.find(function(c) { return c.id === parentId; });
-                if (parent && !parent.isApproved) return true;
-                parentId = parent ? parent.parentCommentId : null;
-            }
-            return false;
+        // Helper to check if a comment's parent is not shown in portal
+        vm.isParentNotShownInPortal = function(comment) {
+            if (!comment.parentId) return false;
+            var parent = vm.Comments.find(function(c) { return c.id === comment.parentId; });
+            return parent && !parent.shownInPortal;
         };
-
-        // Fetch AdminCanAddComment setting from backend
-        $http.get('/api/comments/admin-can-add-comment').then(function(response) {
-            vm.AdminCanAddComment = response.data.adminCanAddComment;
-        }, function(error) {
-            console.error('Failed to fetch AdminCanAddComment', error);
-        });
 
     });
