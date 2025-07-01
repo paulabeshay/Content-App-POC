@@ -8,6 +8,7 @@ angular.module("umbraco")
         var vm = this;
         vm.CurrentNodeId = editorState.current.id;
         vm.CurrentNodeAlias = editorState.current.contentTypeAlias;
+        vm.CurrentNodeParentAlias = '';
         vm.Comments = [];
         vm.CanAdminComments = false;
         vm.showAddModal = false;
@@ -20,11 +21,21 @@ angular.module("umbraco")
         vm.editingCommentText = '';
         vm.replyText = '';
 
+        // Fetch parent node alias
+        contentResource.getById(editorState.current.parentId).then(function (parentNode) {
+            vm.CurrentNodeParentAlias = parentNode.contentTypeAlias;
+            console.log("Parent Content Alias: " + vm.CurrentNodeParentAlias);
+        }, function (error) {
+            console.error('Failed to fetch parent node alias', error);
+        });
+
         // Fetch comments for the current content id
-        vm.loadComments = function() {
+        vm.loadComments = function () {
+            console.log("Loading comments for content ID: " + vm.CurrentNodeId);
             $http.get("/api/comments/content/" + vm.CurrentNodeId)
                 .then(function(response) {
                     vm.Comments = response.data;
+                    console.log("Comments loaded: ", vm.Comments);
                 }, function(error) {
                     console.error("Failed to load comments", error);
                 });
@@ -101,6 +112,8 @@ angular.module("umbraco")
             var comment = {
                 contentId: vm.CurrentNodeId,
                 commentText: vm.newCommentText,
+                contentParentAlias: vm.CurrentNodeParentAlias,
+                commentStatusId: 2,
                 createdBy: vm.UserName,
                 modifiedBy: vm.UserName
             };
@@ -138,7 +151,9 @@ angular.module("umbraco")
             var reply = {
                 contentId: vm.CurrentNodeId,
                 commentText: vm.replyText,
-                parentCommentId: vm.replyToComment.id,
+                parentId: vm.replyToComment.id,
+                contentParentAlias: vm.CurrentNodeParentAlias,
+                commentStatusId: 2,
                 createdBy: vm.UserName,
                 modifiedBy: vm.UserName
             };

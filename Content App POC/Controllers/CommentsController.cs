@@ -24,7 +24,7 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var comment = await _commentService.GetCommentByIdAsync(id);
             if (comment == null) return NotFound();
@@ -47,7 +47,7 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Comment comment)
+        public async Task<IActionResult> Update(Guid id, [FromBody] Comment comment)
         {
             if (id != comment.Id) return BadRequest();
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -56,7 +56,7 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             await _commentService.DeleteCommentAsync(id);
             return NoContent();

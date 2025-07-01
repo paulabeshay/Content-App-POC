@@ -10,5 +10,6 @@ namespace Content_App_POC.CommentsMgt
         }
 
         public DbSet<Comment> Comments { get; set; } = null!;
+        public DbSet<CommentStatus> CommentStatuses { get; set; } = null!;
     }
 } 
