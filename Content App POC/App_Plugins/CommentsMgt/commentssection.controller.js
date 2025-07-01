@@ -180,4 +180,24 @@ angular.module("umbraco")
             vm.CanAdminComments = checkCommentsAdmin(user.userGroups);
         });
 
+        // Toggle ShownInPortal for a comment
+        vm.toggleShownInPortal = function(comment) {
+            var updated = angular.copy(comment);
+            updated.modifiedBy = vm.UserName;
+            $http.put('/api/comments/' + updated.id, updated).then(function() {
+                vm.loadComments();
+            }, function(error) {
+                // Optionally revert the toggle on error
+                comment.shownInPortal = !comment.shownInPortal;
+                alert('Failed to update Shown In Portal');
+            });
+        };
+
+        // Helper to check if a comment's parent is not shown in portal
+        vm.isParentNotShownInPortal = function(comment) {
+            if (!comment.parentId) return false;
+            var parent = vm.Comments.find(function(c) { return c.id === comment.parentId; });
+            return parent && !parent.shownInPortal;
+        };
+
     });
