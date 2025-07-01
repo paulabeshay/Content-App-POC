@@ -21,3 +21,8 @@
         </div>
     </div>
 </article>
+
+@if (Model.Value("portalDisplay") is bool showPortalDisplay && showPortalDisplay)
+{
+    @await Html.PartialAsync("~/Views/Partials/CommentsSection.cshtml")
+}

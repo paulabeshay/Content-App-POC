@@ -53,5 +53,57 @@ namespace Content_App_POC.CommentsMgt
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task SetApprovalRecursiveAsync(int commentId, bool isApproved, string modifiedBy)
+        {
+            var toUpdate = await _context.Comments
+                .Where(c => c.Id == commentId && !c.IsDeleted)
+                .ToListAsync();
+            var children = await _context.Comments
+                .Where(c => c.ParentCommentId == commentId && !c.IsDeleted)
+                .ToListAsync();
+            while (children.Any())
+            {
+                toUpdate.AddRange(children);
+                var nextIds = children.Select(c => c.Id).ToList();
+                children = await _context.Comments
+                    .Where(c => c.ParentCommentId != null && nextIds.Contains((int)c.ParentCommentId) && !c.IsDeleted)
+                    .ToListAsync();
+            }
+            foreach (var comment in toUpdate)
+            {
+                comment.IsApproved = isApproved;
+                comment.ModifiedBy = modifiedBy;
+                comment.ModifiedOn = DateTime.UtcNow;
+                _context.Comments.Update(comment);
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SetDeletedRecursiveAsync(int commentId, string modifiedBy)
+        {
+            var toUpdate = await _context.Comments
+                .Where(c => c.Id == commentId && !c.IsDeleted)
+                .ToListAsync();
+            var children = await _context.Comments
+                .Where(c => c.ParentCommentId == commentId && !c.IsDeleted)
+                .ToListAsync();
+            while (children.Any())
+            {
+                toUpdate.AddRange(children);
+                var nextIds = children.Select(c => c.Id).ToList();
+                children = await _context.Comments
+                    .Where(c => c.ParentCommentId != null && nextIds.Contains((int)c.ParentCommentId) && !c.IsDeleted)
+                    .ToListAsync();
+            }
+            foreach (var comment in toUpdate)
+            {
+                comment.IsDeleted = true;
+                comment.ModifiedBy = modifiedBy;
+                comment.ModifiedOn = DateTime.UtcNow;
+                _context.Comments.Update(comment);
+            }
+            await _context.SaveChangesAsync();
+        }
     }
 } 

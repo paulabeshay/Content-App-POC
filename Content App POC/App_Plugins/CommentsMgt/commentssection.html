@@ -133,6 +133,72 @@
         .reply-button:hover {
             color: #0d5aa7;
         }
+        .dimmed-comment {
+            position: relative;
+        }
+        .dimmed-comment::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 1.2em;
+            z-index: 1;
+        }
+        .dimmed-comment > * {
+            position: relative;
+            z-index: 2;
+        }
+        .form-switch {
+            display: inline-block;
+            position: relative;
+            width: 40px;
+            height: 22px;
+            margin-right: 8px;
+        }
+        .form-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .form-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 22px;
+        }
+        .form-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .form-switch input:checked + .slider {
+            background-color: #1877f2;
+        }
+        .form-switch input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+        .approval-status {
+            font-size: 0.85em;
+            color: #666;
+            margin-left: 0.5em;
+        }
+        .approval-status i {
+            margin-right: 0.3em;
+        }
     </style>
     <umb-box>
         <umb-box-header title="Current Node and User Info"></umb-box-header>
@@ -163,7 +229,7 @@
                 </form>
             </div>
             <!-- Add Comment Button (admin only) -->
-            <div class="mb-3" ng-if="vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
+            <div class="mb-3" ng-if="vm.AdminCanAddComment && vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
                 <button class="btn btn-success btn-sm" ng-click="vm.openAddModal()">
                     <i class="fa fa-plus"></i> Add Comment
                 </button>
@@ -194,21 +260,32 @@
                             <!--{{vm.getInitials(comment.createdBy)}}-->
                         </div>
                         <div>
-                            <span class="comment-author">{{comment.createdBy}}</span><br/>
+                            <span class="comment-author">{{comment.createdBy}}</span><br />
                             <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
                         </div>
+                        <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                            <label class="form-switch mb-0">
+                                <input type="checkbox" ng-checked="comment.isApproved" ng-click="vm.toggleApproval(comment)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="approval-status">
+                                <i class="fa" ng-class="{'fa-check-circle': comment.isApproved, 'fa-times-circle': !comment.isApproved}"></i>
+                                {{comment.isApproved ? 'Approved' : 'Not Approved'}}
+                            </span>
+                        </div>
                     </div>
+                    
                     <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
                         <div class="comment-text" style="width: 58%;">{{comment.commentText}}</div>
                         <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="vm.CanAdminComments">
-                            <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
+                            <button class="btn btn-outline-primary btn-sm me-2" ng-if="vm.AdminCanAddComment" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
                         </div>
-                        <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                        <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)" ng-if="comment.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                        </div>
+                        </div>-->
                     </div>
                     <!-- Replies -->
                     <div ng-repeat="reply in vm.Comments | filter:{parentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3">
@@ -218,8 +295,18 @@
                                 <!--{{vm.getInitials(reply.createdBy)}}-->
                             </div>
                             <div>
-                                <span class="comment-author">{{reply.createdBy}}</span><br/>
+                                <span class="comment-author">{{reply.createdBy}}</span><br />
                                 <span class="comment-date">{{reply.createdOn | date:'short'}}</span>
+                            </div>
+                            <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
+                                <label class="form-switch mb-0">
+                                    <input type="checkbox" ng-checked="reply.isApproved" ng-click="vm.toggleApproval(reply)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="approval-status">
+                                    <i class="fa" ng-class="{'fa-check-circle': reply.isApproved, 'fa-times-circle': !reply.isApproved}"></i>
+                                    {{reply.isApproved ? 'Approved' : 'Not Approved'}}
+                                </span>
                             </div>
                         </div>
                         <div class="comment-body d-flex flex-row align-items-start" style="display: flex;">
@@ -228,9 +315,9 @@
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)"><i class="fa fa-edit"></i> Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(reply)"><i class="fa fa-trash"></i> Delete</button>
                             </div>
-                            <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                            <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)" ng-if="reply.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <div class="comment-divider" ng-if="!$last"></div>
@@ -289,7 +376,7 @@
                             </div>
                             <textarea ng-model="vm.replyText" class="form-control" style="width: 100%;" rows="3" placeholder="Write your reply..."></textarea>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer d-flex flex-row justify-content-between" style="gap: 1em;">
                             <button class="btn btn-secondary" ng-click="vm.closeReplyModal()">Cancel</button>
                             <button class="btn btn-primary" ng-click="vm.submitReply()">Reply</button>
                         </div>
