@@ -1,0 +1,25 @@
+﻿.umb-property--disabled {
+    Add commentMore actions pointer-events: none;
+    opacity: 0.6;
+}
+
+    .umb-property--disabled .umb-property__header {
+        color: #999;
+    }
+
+    .umb-property--disabled .umb-property__description {
+        color: #999;
+    }
+
+    .umb-property--disabled input[type="checkbox"] {
+        cursor: not-allowed;
+    }
+
+    .umb-property--disabled label {
+        cursor: not-allowed;
+        color: #999;
+    }
+
+    .umb-property--disabled .umb-property__field {
+        opacity: 0.6;
+    }

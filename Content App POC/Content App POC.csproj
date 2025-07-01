@@ -7,6 +7,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="App_Plugins\CommentsMgt\commentssection.html" />
+		<Content Include="App_Plugins\PortalDisplayDependency\PortalDisplayDependency.css" />
 		<Content Include="App_Plugins\WordCounter\wordcounter.html" />
 	</ItemGroup>
 
@@ -25,6 +26,7 @@
 	<ItemGroup>
 		<None Include="App_Plugins\CommentsMgt\commentssection.controller.js" />
 		<None Include="app_plugins\commentsmgt\Package.manifest" />
+		<None Include="App_Plugins\PortalDisplayDependency\PortalDisplayDependency.js" />
 		<None Include="app_plugins\wordcounter\Package.manifest" />
 		<None Include="App_Plugins\WordCounter\wordcounter.controller.js" />
 	</ItemGroup>
