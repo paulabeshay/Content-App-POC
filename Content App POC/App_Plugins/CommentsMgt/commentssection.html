@@ -186,7 +186,7 @@
         </umb-box-content>
         <umb-box-content>
             <h4 class="mb-3">Comments</h4>
-            <div ng-if="vm.CanEditComments" class="add-comment-form mb-4">
+            <!--<div ng-if="vm.CanAdminComments" class="add-comment-form mb-4">
                 <div class="add-comment-avatar">
                     {{vm.getInitials(vm.UserName)}}
                 </div>
@@ -196,7 +196,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-sm">Comment</button>
                 </form>
-            </div>
+            </div>-->
             <!-- Add Comment Button (admin only) -->
             <div class="mb-3" ng-if="vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
                 <button class="btn btn-success btn-sm" ng-click="vm.openAddModal()">
@@ -255,10 +255,10 @@
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)"><i class="fa fa-edit"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(comment)"><i class="fa fa-trash"></i> Delete</button>
                         </div>
-                        <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                        <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openReplyModal(comment)"><i class="fa fa-plus"></i>Reply</button>
                             <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(comment)" ng-if="comment.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                        </div>
+                        </div>-->
                     </div>
                     <!-- Replies -->
                     <div ng-repeat="reply in vm.Comments | filter:{parentId: comment.id}" style="padding: 15px; position:relative;" class="card comments-section-card comment-reply p-3">
@@ -293,9 +293,9 @@
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)"><i class="fa fa-edit"></i> Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" ng-click="vm.openDeleteModal(reply)"><i class="fa fa-trash"></i> Delete</button>
                             </div>
-                            <div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
+                            <!--<div class="comment-actions d-flex flex-row justify-content-end ms-auto" ng-if="!vm.CanAdminComments">
                                 <button class="btn btn-outline-primary btn-sm me-2" ng-click="vm.openEditModal(reply)" ng-if="reply.createdBy === vm.UserName"><i class="fa fa-edit"></i> Edit</button>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <div class="comment-divider" ng-if="!$last"></div>
@@ -303,7 +303,7 @@
                 <div ng-if="!vm.Comments.length" class="alert alert-info mt-3">No comments yet. Be the first to comment!</div>
             </div>
             <!-- Edit Modal -->
-            <div ng-if="vm.showEditModal" class="custom-modal-overlay">
+            <div ng-if="vm.showEditModal && vm.CanAdminComments" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">
@@ -321,7 +321,7 @@
                 </div>
             </div>
             <!-- Delete Modal -->
-            <div ng-if="vm.showDeleteModal" class="custom-modal-overlay">
+            <div ng-if="vm.showDeleteModal && vm.CanAdminComments" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">
@@ -340,7 +340,7 @@
                 </div>
             </div>
             <!-- Reply Modal -->
-            <div ng-if="vm.showReplyModal" class="custom-modal-overlay">
+            <div ng-if="vm.showReplyModal && vm.CanAdminComments" class="custom-modal-overlay">
                 <div class="custom-modal-dialog">
                     <div class="custom-modal-content">
                         <div class="modal-header">

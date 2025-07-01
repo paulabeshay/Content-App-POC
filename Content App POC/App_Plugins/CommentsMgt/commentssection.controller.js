@@ -113,7 +113,7 @@ angular.module("umbraco")
                 contentId: vm.CurrentNodeId,
                 commentText: vm.newCommentText,
                 contentParentAlias: vm.CurrentNodeParentAlias,
-                commentStatusId: 2,
+                commentStatusId: 1,
                 createdBy: vm.UserName,
                 modifiedBy: vm.UserName
             };
@@ -153,7 +153,7 @@ angular.module("umbraco")
                 commentText: vm.replyText,
                 parentId: vm.replyToComment.id,
                 contentParentAlias: vm.CurrentNodeParentAlias,
-                commentStatusId: 2,
+                commentStatusId: 1,
                 createdBy: vm.UserName,
                 modifiedBy: vm.UserName
             };
