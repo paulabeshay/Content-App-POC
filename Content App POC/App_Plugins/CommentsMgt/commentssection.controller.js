@@ -8,7 +8,6 @@ angular.module("umbraco")
         var vm = this;
         vm.CurrentNodeId = editorState.current.id;
         vm.CurrentNodeAlias = editorState.current.contentTypeAlias;
-        vm.CurrentNodeParentAlias = null;
         vm.Comments = [];
         vm.CanAdminComments = false;
         vm.showAddModal = false;
@@ -22,20 +21,11 @@ angular.module("umbraco")
         vm.replyText = '';
         vm.AdminCanAddComment = false;
 
-        // Fetch parent node alias
-        contentResource.getById(editorState.current.parentId).then(function (parentNode) {
-            vm.CurrentNodeParentAlias = parentNode.contentTypeAlias;
-            console.log(vm.CurrentNodeParentAlias);
-        }, function (error) {
-            console.error('Failed to fetch parent node alias', error);
-        });
-
         // Fetch comments for the current content id
         vm.loadComments = function() {
             $http.get("/api/comments/content/" + vm.CurrentNodeId)
                 .then(function(response) {
-                    vm.Comments = response.data.filter(function(c) { return c.shownInPortal; });
-                    console.log('Loaded comments:', vm.Comments);
+                    vm.Comments = response.data;
                 }, function(error) {
                     console.error("Failed to load comments", error);
                 });
@@ -113,8 +103,7 @@ angular.module("umbraco")
                 contentId: vm.CurrentNodeId,
                 commentText: vm.newCommentText,
                 createdBy: vm.UserName,
-                modifiedBy: vm.UserName,
-                contentParentAlias: vm.CurrentNodeParentAlias
+                modifiedBy: vm.UserName
             };
             $http.post('/api/comments', comment).then(function() {
                 vm.newCommentText = '';
@@ -150,10 +139,9 @@ angular.module("umbraco")
             var reply = {
                 contentId: vm.CurrentNodeId,
                 commentText: vm.replyText,
-                parentId: vm.replyToComment.id,
+                parentCommentId: vm.replyToComment.id,
                 createdBy: vm.UserName,
-                modifiedBy: vm.UserName,
-                contentParentAlias: vm.CurrentNodeParentAlias
+                modifiedBy: vm.UserName
             };
             $http.post('/api/comments', reply).then(function() {
                 vm.closeReplyModal();
@@ -178,14 +166,25 @@ angular.module("umbraco")
             vm.CanAdminComments = checkCommentsAdmin(user.userGroups);
         });
 
-        // Helper to check if a comment or any parent is not shown in portal
+        // Toggle approval for a comment and its children
+        vm.toggleApproval = function(comment) {
+            var newStatus = !comment.isApproved;
+            $http.put('/api/comments/' + comment.id + '/approval', {
+                isApproved: newStatus,
+                modifiedBy: vm.UserName
+            }).then(function() {
+                vm.loadComments();
+            });
+        };
+
+        // Helper to check if a comment or any parent is disapproved
         vm.isDimmed = function(comment) {
-            if (comment.shownInPortal === false) return true;
-            var parentId = comment.parentId;
+            if (!comment.isApproved) return true;
+            var parentId = comment.parentCommentId;
             while (parentId) {
                 var parent = vm.Comments.find(function(c) { return c.id === parentId; });
-                if (parent && parent.shownInPortal === false) return true;
-                parentId = parent ? parent.parentId : null;
+                if (parent && !parent.isApproved) return true;
+                parentId = parent ? parent.parentCommentId : null;
             }
             return false;
         };
