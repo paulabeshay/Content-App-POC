@@ -27,7 +27,7 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var comment = await _commentService.GetCommentByIdAsync(id);
             if (comment == null) return NotFound();
@@ -45,15 +45,17 @@ namespace Content_App_POC.Controllers
         public async Task<IActionResult> Create([FromBody] Comment comment)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            // Set IsApproved based on CommentsAutoApproved from config
+            // Set CommentStatusId based on CommentsAutoApproved from config
             var autoApprovedValue = _configuration["CommentsConfig:CommentsAutoApproved"];
-            comment.IsApproved = string.Equals(autoApprovedValue, "true", StringComparison.OrdinalIgnoreCase);
+            comment.CommentStatusId = string.Equals(autoApprovedValue, "true", StringComparison.OrdinalIgnoreCase)
+                ? (int)CommentStatusEnum.Approved
+                : (int)CommentStatusEnum.Pending;
             await _commentService.AddCommentAsync(comment);
             return CreatedAtAction(nameof(GetById), new { id = comment.Id }, comment);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Comment comment)
+        public async Task<IActionResult> Update(Guid id, [FromBody] Comment comment)
         {
             if (id != comment.Id) return BadRequest();
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -62,19 +64,18 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            // Get user name for audit (if available)
             var userName = User?.Identity?.Name ?? "System";
             await _commentService.SetDeletedRecursiveAsync(id, userName);
             return NoContent();
         }
 
-        [HttpPut("{id}/approval")]
-        public async Task<IActionResult> SetApproval(int id, [FromBody] ApprovalDto dto)
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> SetStatus(Guid id, [FromBody] StatusDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            await _commentService.SetApprovalRecursiveAsync(id, dto.IsApproved, dto.ModifiedBy);
+            await _commentService.SetStatusRecursiveAsync(id, dto.Status, dto.ModifiedBy);
             return NoContent();
         }
 
@@ -87,9 +88,9 @@ namespace Content_App_POC.Controllers
             return Ok(new { adminCanAddComment = canAdd });
         }
 
-        public class ApprovalDto
+        public class StatusDto
         {
-            public bool IsApproved { get; set; }
+            public CommentStatusEnum Status { get; set; }
             public string ModifiedBy { get; set; } = string.Empty;
         }
     }
