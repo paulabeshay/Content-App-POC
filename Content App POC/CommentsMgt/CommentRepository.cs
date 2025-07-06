@@ -14,7 +14,7 @@ namespace Content_App_POC.CommentsMgt
             _context = context;
         }
 
-        public async Task<Comment?> GetByIdAsync(int id)
+        public async Task<Comment?> GetByIdAsync(Guid id)
         {
             return await _context.Comments.FindAsync(id);
         }
@@ -43,7 +43,7 @@ namespace Content_App_POC.CommentsMgt
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var comment = await _context.Comments.FindAsync(id);
             if (comment != null)
@@ -54,25 +54,25 @@ namespace Content_App_POC.CommentsMgt
             }
         }
 
-        public async Task SetApprovalRecursiveAsync(int commentId, bool isApproved, string modifiedBy)
+        public async Task SetShownRecursiveAsync(Guid commentId, bool ShownInPortal, string modifiedBy)
         {
             var toUpdate = await _context.Comments
                 .Where(c => c.Id == commentId && !c.IsDeleted)
                 .ToListAsync();
             var children = await _context.Comments
-                .Where(c => c.ParentCommentId == commentId && !c.IsDeleted)
+                .Where(c => c.ParentId == commentId && !c.IsDeleted)
                 .ToListAsync();
             while (children.Any())
             {
                 toUpdate.AddRange(children);
                 var nextIds = children.Select(c => c.Id).ToList();
                 children = await _context.Comments
-                    .Where(c => c.ParentCommentId != null && nextIds.Contains((int)c.ParentCommentId) && !c.IsDeleted)
+                    .Where(c => c.ParentId != null && nextIds.Contains((Guid)c.ParentId) && !c.IsDeleted)
                     .ToListAsync();
             }
             foreach (var comment in toUpdate)
             {
-                comment.IsApproved = isApproved;
+                comment.ShownInPortal = ShownInPortal;
                 comment.ModifiedBy = modifiedBy;
                 comment.ModifiedOn = DateTime.UtcNow;
                 _context.Comments.Update(comment);
@@ -80,20 +80,20 @@ namespace Content_App_POC.CommentsMgt
             await _context.SaveChangesAsync();
         }
 
-        public async Task SetDeletedRecursiveAsync(int commentId, string modifiedBy)
+        public async Task SetDeletedRecursiveAsync(Guid commentId, string modifiedBy)
         {
             var toUpdate = await _context.Comments
                 .Where(c => c.Id == commentId && !c.IsDeleted)
                 .ToListAsync();
             var children = await _context.Comments
-                .Where(c => c.ParentCommentId == commentId && !c.IsDeleted)
+                .Where(c => c.ParentId == commentId && !c.IsDeleted)
                 .ToListAsync();
             while (children.Any())
             {
                 toUpdate.AddRange(children);
                 var nextIds = children.Select(c => c.Id).ToList();
                 children = await _context.Comments
-                    .Where(c => c.ParentCommentId != null && nextIds.Contains((int)c.ParentCommentId) && !c.IsDeleted)
+                    .Where(c => c.ParentId != null && nextIds.Contains((Guid)c.ParentId) && !c.IsDeleted)
                     .ToListAsync();
             }
             foreach (var comment in toUpdate)

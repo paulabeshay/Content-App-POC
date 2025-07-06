@@ -27,7 +27,7 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var comment = await _commentService.GetCommentByIdAsync(id);
             if (comment == null) return NotFound();
@@ -47,13 +47,13 @@ namespace Content_App_POC.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             // Set IsApproved based on CommentsAutoApproved from config
             var autoApprovedValue = _configuration["CommentsConfig:CommentsAutoApproved"];
-            comment.IsApproved = string.Equals(autoApprovedValue, "true", StringComparison.OrdinalIgnoreCase);
+            comment.ShownInPortal = string.Equals(autoApprovedValue, "true", StringComparison.OrdinalIgnoreCase);
             await _commentService.AddCommentAsync(comment);
             return CreatedAtAction(nameof(GetById), new { id = comment.Id }, comment);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Comment comment)
+        public async Task<IActionResult> Update(Guid id, [FromBody] Comment comment)
         {
             if (id != comment.Id) return BadRequest();
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -62,7 +62,7 @@ namespace Content_App_POC.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             // Get user name for audit (if available)
             var userName = User?.Identity?.Name ?? "System";
@@ -70,11 +70,11 @@ namespace Content_App_POC.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}/approval")]
-        public async Task<IActionResult> SetApproval(int id, [FromBody] ApprovalDto dto)
+        [HttpPut("{id}/shown")]
+        public async Task<IActionResult> SetShownInPortal(Guid id, [FromBody] ShownInPortalDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            await _commentService.SetApprovalRecursiveAsync(id, dto.IsApproved, dto.ModifiedBy);
+            await _commentService.SetShownRecursiveAsync(id, dto.ShownInPortal, dto.ModifiedBy);
             return NoContent();
         }
 
@@ -87,9 +87,9 @@ namespace Content_App_POC.Controllers
             return Ok(new { adminCanAddComment = canAdd });
         }
 
-        public class ApprovalDto
+        public class ShownInPortalDto
         {
-            public bool IsApproved { get; set; }
+            public bool ShownInPortal { get; set; }
             public string ModifiedBy { get; set; } = string.Empty;
         }
     }

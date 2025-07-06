@@ -217,17 +217,6 @@
         </umb-box-content>
         <umb-box-content>
             <h4 class="mb-3">Comments</h4>
-            <!--<div ng-if="vm.CanEditComments" class="add-comment-form mb-4">
-                <div class="add-comment-avatar">
-                    {{vm.getInitials(vm.UserName)}}
-                </div>
-                <form ng-submit="vm.addComment()" class="add-comment-input">
-                    <div class="mb-2">
-                        <textarea ng-model="vm.newCommentText" placeholder="Write a comment..." rows="2" class="form-control"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-sm">Comment</button>
-                </form>
-            </div>-->
             <!-- Add Comment Button (admin only) -->
             <div class="mb-3" ng-if="vm.AdminCanAddComment && vm.CanAdminComments" style="margin-bottom: 15px; justify-self: right;">
                 <button class="btn btn-success btn-sm" ng-click="vm.openAddModal()">
@@ -253,7 +242,7 @@
                 </div>
             </div>
             <div class="comments-list">
-                <div ng-repeat="comment in vm.Comments | filter:{parentCommentId: null}" class="card comments-section-card p-3" style="padding:15px;" ng-class="{'dimmed-comment': vm.isDimmed(comment)}">
+                <div ng-repeat="comment in vm.Comments | filter:{parentId: null}" class="card comments-section-card p-3" style="padding:15px;" ng-class="{'dimmed-comment': vm.isDimmed(comment)}">
                     <div class="comment-header d-flex justify-content-between align-items-center">
                         <div class="comment-avatar">
                             <i class="fa fa-user" aria-hidden="true"></i>
@@ -264,13 +253,13 @@
                             <span class="comment-date">{{comment.createdOn | date:'short'}}</span>
                         </div>
                         <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
-                            <label class="form-switch mb-0">
-                                <input type="checkbox" ng-checked="comment.isApproved" ng-click="vm.toggleApproval(comment)">
+                            <label class="form-switch" title="Show in Portal">
+                                <input type="checkbox" ng-model="comment.shownInPortal" ng-change="vm.toggleShownInPortal(comment)" />
                                 <span class="slider"></span>
                             </label>
                             <span class="approval-status">
-                                <i class="fa" ng-class="{'fa-check-circle': comment.isApproved, 'fa-times-circle': !comment.isApproved}"></i>
-                                {{comment.isApproved ? 'Approved' : 'Not Approved'}}
+                                <i class="fa" ng-class="{'fa-eye': comment.shownInPortal, 'fa-eye-slash': !comment.shownInPortal}"></i>
+                                {{comment.shownInPortal ? 'Visible' : 'Hidden'}}
                             </span>
                         </div>
                     </div>
@@ -288,7 +277,7 @@
                         </div>-->
                     </div>
                     <!-- Replies -->
-                    <div ng-repeat="reply in vm.Comments | filter:{parentCommentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3" ng-class="{'dimmed-comment': vm.isDimmed(reply)}">
+                    <div ng-repeat="reply in vm.Comments | filter:{parentId: comment.id}" style="padding: 15px;" class="card comments-section-card comment-reply p-3" ng-class="{'dimmed-comment': vm.isDimmed(reply)}">
                         <div class="comment-header d-flex justify-content-between align-items-center">
                             <div class="comment-avatar">
                                 <i class="fa fa-user" aria-hidden="true"></i>
@@ -299,13 +288,13 @@
                                 <span class="comment-date">{{reply.createdOn | date:'short'}}</span>
                             </div>
                             <div class="d-flex flex-row align-items-center ms-auto" ng-if="vm.CanAdminComments" style="margin-left:auto;">
-                                <label class="form-switch mb-0">
-                                    <input type="checkbox" ng-checked="reply.isApproved" ng-click="vm.toggleApproval(reply)">
+                                <label class="form-switch" title="Show in Portal">
+                                    <input type="checkbox" ng-model="reply.shownInPortal" ng-change="vm.toggleShownInPortal(reply)" />
                                     <span class="slider"></span>
                                 </label>
                                 <span class="approval-status">
-                                    <i class="fa" ng-class="{'fa-check-circle': reply.isApproved, 'fa-times-circle': !reply.isApproved}"></i>
-                                    {{reply.isApproved ? 'Approved' : 'Not Approved'}}
+                                    <i class="fa" ng-class="{'fa-eye': reply.shownInPortal, 'fa-eye-slash': !reply.shownInPortal}"></i>
+                                    {{reply.shownInPortal ? 'Visible' : 'Hidden'}}
                                 </span>
                             </div>
                         </div>

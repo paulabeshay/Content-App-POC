@@ -6,13 +6,13 @@ namespace Content_App_POC.CommentsMgt
 {
     public interface ICommentRepository
     {
-        Task<Comment?> GetByIdAsync(int id);
+        Task<Comment?> GetByIdAsync(Guid id);
         Task<IEnumerable<Comment>> GetByContentIdAsync(int contentId);
         Task<IEnumerable<Comment>> GetAllAsync();
         Task AddAsync(Comment comment);
         Task UpdateAsync(Comment comment);
-        Task DeleteAsync(int id);
-        Task SetApprovalRecursiveAsync(int commentId, bool isApproved, string modifiedBy);
-        Task SetDeletedRecursiveAsync(int commentId, string modifiedBy);
+        Task DeleteAsync(Guid id);
+        Task SetShownRecursiveAsync(Guid commentId, bool shownInPortal, string modifiedBy);
+        Task SetDeletedRecursiveAsync(Guid commentId, string modifiedBy);
     }
 } 

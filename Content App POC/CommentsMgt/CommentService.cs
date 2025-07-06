@@ -12,7 +12,7 @@ namespace Content_App_POC.CommentsMgt
             _repository = repository;
         }
 
-        public async Task<Comment?> GetCommentByIdAsync(int id)
+        public async Task<Comment?> GetCommentByIdAsync(Guid id)
         {
             return await _repository.GetByIdAsync(id);
         }
@@ -37,17 +37,17 @@ namespace Content_App_POC.CommentsMgt
             await _repository.UpdateAsync(comment);
         }
 
-        public async Task DeleteCommentAsync(int id)
+        public async Task DeleteCommentAsync(Guid id)
         {
             await _repository.DeleteAsync(id);
         }
 
-        public async Task SetApprovalRecursiveAsync(int commentId, bool isApproved, string modifiedBy)
+        public async Task SetShownRecursiveAsync(Guid commentId, bool shownInPortal, string modifiedBy)
         {
-            await _repository.SetApprovalRecursiveAsync(commentId, isApproved, modifiedBy);
+            await _repository.SetShownRecursiveAsync(commentId, shownInPortal, modifiedBy);
         }
 
-        public async Task SetDeletedRecursiveAsync(int commentId, string modifiedBy)
+        public async Task SetDeletedRecursiveAsync(Guid commentId, string modifiedBy)
         {
             await _repository.SetDeletedRecursiveAsync(commentId, modifiedBy);
         }
